@@ -1,0 +1,88 @@
+{% extends "base.html" %} {% block title %}Result - Tomato Leaf Check{% endblock
+%} {% block content %} {% set healthy = info and info.label == "Healthy" %}
+
+<section class="result">
+  <div class="photo">
+    <img src="{{ image_url }}" alt="The leaf you uploaded" />
+  </div>
+
+  <div class="verdict">
+    {% if uncertain %}
+    <h1>We couldn't tell what this is</h1>
+
+    <div class="meter meter-unsure">
+      <div class="meter-row">
+        <span>Confidence</span><strong>{{ confidence }}%</strong>
+      </div>
+      <div class="bar"><span style="width: {{ confidence }}%"></span></div>
+    </div>
+
+    <p>
+      The model's best guess was too uncertain to trust, and a wrong answer
+      could send you toward the wrong treatment. It is better to try again.
+    </p>
+
+    <h2>Try again with</h2>
+    <ul class="checks">
+      <li>Good daylight and no harsh shadows.</li>
+      <li>One leaf filling the frame.</li>
+      <li>A sharp, steady photo.</li>
+      <li>A plain background.</li>
+    </ul>
+
+    {% else %}
+    <h1>{{ info.label }}</h1>
+
+    <div class="meter {{ 'meter-ok' if healthy else 'meter-issue' }}">
+      <div class="meter-row">
+        <span>Confidence</span><strong>{{ confidence }}%</strong>
+      </div>
+      <div class="bar"><span style="width: {{ confidence }}%"></span></div>
+    </div>
+
+    <p class="summary">{{ info.summary }}</p>
+
+    <!-- THE NEW SOFT WARNING BLOCK -->
+    {% if show_warning %}
+    <div
+      class="warning-box"
+      style="
+        background-color: #fff3cd;
+        color: #856404;
+        padding: 15px;
+        margin: 15px 0 25px 0;
+        border-left: 6px solid #ffeeba;
+        border-radius: 4px;
+      "
+    >
+      <strong style="display: block; margin-bottom: 5px"
+        >⚠️ Low Confidence Diagnosis</strong
+      >
+      <span style="font-size: 0.95em; line-height: 1.4">
+        This prediction was made with lower certainty than usual. The photo may
+        be slightly blurry, poorly lit, or zoomed out. Please consider checking
+        another leaf with a clearer photo to confirm.
+      </span>
+    </div>
+    {% endif %}
+    <!-- END SOFT WARNING BLOCK -->
+
+    <h2>What to do</h2>
+    <ul class="steps">
+      {% for step in info.advice %}
+      <li>{{ step }}</li>
+      {% endfor %}
+    </ul>
+
+    {% if not healthy %}
+    <p class="note">
+      Confirm with a local agronomist before applying any chemical treatment.
+    </p>
+    {% endif %} {% endif %}
+
+    <div class="actions">
+      <a class="btn btn-secondary" href="/">Check another leaf</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

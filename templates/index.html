@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+  <div class="hero-text">
+    <h1>Is your tomato leaf healthy?</h1>
+    <p>Upload a photo of one leaf. You'll get the most likely problem, how sure the model is, and what to do about it.</p>
+  </div>
+
+  <form class="upload" action="/predict" method="post" enctype="multipart/form-data" id="upload-form">
+    {% if error %}
+      <div class="error" role="alert">{{ error }}</div>
+    {% endif %}
+
+    <label class="dropzone" id="dropzone" for="photo">
+      <input type="file" name="photo" id="photo" accept="image/*" required>
+      <img id="preview" alt="Preview of the chosen leaf photo" hidden>
+      <span class="dz-text" id="dz-text">
+        <strong>Choose a leaf photo</strong>
+        <span>or drag one here. JPG, PNG or WEBP.</span>
+      </span>
+    </label>
+
+    <button type="submit" class="btn btn-primary" id="submit-btn">Check this leaf</button>
+  </form>
+</section>
+
+<section class="info">
+  <div>
+    <h2>For a reliable result</h2>
+    <ul class="checks">
+      <li>Shoot in daylight, away from harsh shadows.</li>
+      <li>Fill the frame with one leaf.</li>
+      <li>Hold the phone steady so the leaf is sharp.</li>
+      <li>Use a plain background if you can, such as your hand or a sheet of paper.</li>
+    </ul>
+  </div>
+
+  <div>
+    <h2>What it can detect</h2>
+    <ul class="chips">
+      <li>Healthy</li>
+      <li>Bacterial spot</li>
+      <li>Early blight</li>
+      <li>Late blight</li>
+      <li>Leaf mold</li>
+      <li>Septoria leaf spot</li>
+      <li>Spider mites</li>
+      <li>Target spot</li>
+      <li>Yellow leaf curl virus</li>
+      <li>Mosaic virus</li>
+    </ul>
+  </div>
+</section>
+
+<script>
+  const input = document.getElementById("photo");
+  const preview = document.getElementById("preview");
+  const dzText = document.getElementById("dz-text");
+  const dropzone = document.getElementById("dropzone");
+  const form = document.getElementById("upload-form");
+  const btn = document.getElementById("submit-btn");
+
+  input.addEventListener("change", () => {
+    const file = input.files[0];
+    if (!file) return;
+    preview.src = URL.createObjectURL(file);
+    preview.hidden = false;
+    dzText.hidden = true;
+    dropzone.classList.add("has-photo");
+  });
+
+  form.addEventListener("submit", () => {
+    btn.textContent = "Checking the leaf...";
+    btn.disabled = true;
+  });
+
+  // If the user presses Back from the result page, reset the button
+  window.addEventListener("pageshow", () => {
+    btn.disabled = false;
+    btn.textContent = "Check this leaf";
+  });
+</script>
+{% endblock %}
